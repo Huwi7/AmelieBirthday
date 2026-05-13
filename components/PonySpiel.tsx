@@ -301,6 +301,18 @@ export default function PonySpiel() {
           </div>
         </div>
 
+        <div
+          className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 shadow-lg mb-6 animate-fade-in-up delay-400"
+          style={{ opacity: 0 }}
+        >
+          <p className="text-white font-nunito text-lg text-center">
+            🐴 <em>Was sagt das Pony, wenn es etwas Lustiges hört?</em>
+          </p>
+          <p className="text-white font-pacifico text-2xl text-center mt-3">
+            „Das ist ja wieher-lisch!" 😄
+          </p>
+        </div>
+
         {gameOver && (
           <div
             className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg animate-fade-in-scale"

@@ -6,6 +6,7 @@ export default function Anmeldung() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [attending, setAttending] = useState<boolean | null>(null)
+  const [fahrdienst, setFahrdienst] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -20,7 +21,7 @@ export default function Anmeldung() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), attending }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), attending, fahrdienst }),
       })
 
       if (response.ok) {
@@ -53,6 +54,7 @@ export default function Anmeldung() {
                 setName('')
                 setEmail('')
                 setAttending(null)
+                setFahrdienst(false)
               }}
               className="bg-gold text-white px-6 py-2 rounded-full font-nunito hover:bg-yellow-400 transition-colors"
             >
@@ -133,6 +135,22 @@ export default function Anmeldung() {
               </button>
             </div>
           </div>
+
+          {attending === true && (
+            <div className="mb-6">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={fahrdienst}
+                  onChange={(e) => setFahrdienst(e.target.checked)}
+                  className="w-5 h-5 rounded accent-gold"
+                />
+                <span className="text-white font-nunito">
+                  🚗 Wir können als Fahrer/in helfen (wir haben zu wenig Platz im Auto)
+                </span>
+              </label>
+            </div>
+          )}
 
           <button
             type="submit"
