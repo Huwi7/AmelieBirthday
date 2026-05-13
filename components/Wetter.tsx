@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 interface WeatherData {
   temperature_2m_max: number[]
@@ -19,7 +18,6 @@ export default function Wetter() {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Berechne ein Datum in ~5 Tagen für realistische Vorhersagedaten
         const forecastDate = new Date()
         forecastDate.setDate(forecastDate.getDate() + 5)
         const dateString = forecastDate.toISOString().split('T')[0]
@@ -50,20 +48,13 @@ export default function Wetter() {
   return (
     <section className="py-16 px-4">
       <div className="max-w-2xl mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-pacifico text-white text-center mb-12 drop-shadow-lg"
+        <h2
+          className="text-4xl md:text-5xl font-pacifico text-white text-center mb-12 drop-shadow-lg animate-fade-in-up"
         >
           Wie wird's Wetter am 30. Mai? 🌤️
-        </motion.h2>
+        </h2>
 
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
+        <div className="animate-fade-in-up delay-200" style={{ opacity: 0 }}>
           <div className="flex gap-4 mb-6 justify-center">
             <button
               onClick={() => setShowForecast(true)}
@@ -88,10 +79,8 @@ export default function Wetter() {
           </div>
 
           {showForecast ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg"
+            <div
+              className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg animate-fade-in-scale"
             >
               {loading && (
                 <div className="text-center text-white">
@@ -143,12 +132,10 @@ export default function Wetter() {
                   </div>
                 </div>
               )}
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg text-center"
+            <div
+              className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg text-center animate-fade-in-scale"
             >
               <div className="text-6xl mb-4">📅</div>
               <h3 className="text-2xl font-pacifico text-white mb-4">Wetter am 30. Mai 2026</h3>
@@ -166,9 +153,9 @@ export default function Wetter() {
                   <div className="text-sm text-white/80">Ideal für Ponys!</div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

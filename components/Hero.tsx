@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 export default function Hero() {
   const [timeLeft, setTimeLeft] = useState({
@@ -50,31 +49,23 @@ export default function Hero() {
     <section className="relative py-20 px-4 text-center overflow-hidden">
       <div className="rainbow-header h-2 mb-8 rounded-full mx-auto max-w-md"></div>
 
-      <motion.h1
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
-        className="text-6xl md:text-8xl font-pacifico text-white mb-4 drop-shadow-lg"
+      <h1
+        className="text-6xl md:text-8xl font-pacifico text-white mb-4 drop-shadow-lg animate-fade-in-down"
       >
         Amelies Pony-Party!
-      </motion.h1>
+      </h1>
 
-      <motion.p
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="text-2xl md:text-4xl font-nunito text-white mb-8 drop-shadow-lg"
+      <p
+        className="text-2xl md:text-4xl font-nunito text-white mb-8 drop-shadow-lg animate-fade-in-up delay-500"
+        style={{ opacity: 0 }}
       >
         Amelie wird 9 — komm feiern!
-      </motion.p>
+      </p>
 
-      
       {/* Countdown */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.5 }}
-        className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto"
+      <div
+        className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto animate-fade-in delay-1500"
+        style={{ opacity: 0 }}
       >
         <h3 className="text-xl font-nunito text-white mb-4">
           {expired ? 'Die Party ist bereits vorbei!' : 'Noch bis zur Party:'}
@@ -97,7 +88,7 @@ export default function Hero() {
             <div className="text-sm text-white/80">Sek</div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

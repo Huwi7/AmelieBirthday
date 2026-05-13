@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
 
 interface RSVP {
   id: string
@@ -36,19 +35,15 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rosa to-lila p-8">
       <div className="max-w-4xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-6xl font-pacifico text-white text-center mb-8 drop-shadow-lg"
+        <h1
+          className="text-4xl md:text-6xl font-pacifico text-white text-center mb-8 drop-shadow-lg animate-fade-in-down"
         >
           Admin — Anmeldungen 🎉
-        </motion.h1>
+        </h1>
 
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-8"
+        <div
+          className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 mb-8 animate-fade-in-up delay-200"
+          style={{ opacity: 0 }}
         >
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
@@ -60,7 +55,7 @@ export default function AdminPage() {
               <div className="text-white font-nunito">Kommen nicht ❌</div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {loading ? (
           <div className="text-center text-white">
@@ -68,11 +63,9 @@ export default function AdminPage() {
             Lade Anmeldungen...
           </div>
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="bg-white/20 backdrop-blur-sm rounded-2xl overflow-hidden"
+          <div
+            className="bg-white/20 backdrop-blur-sm rounded-2xl overflow-hidden animate-fade-in delay-400"
+            style={{ opacity: 0 }}
           >
             <table className="w-full">
               <thead className="bg-white/10">
@@ -96,7 +89,7 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
-          </motion.div>
+          </div>
         )}
       </div>
     </div>

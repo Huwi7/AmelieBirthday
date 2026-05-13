@@ -12,18 +12,15 @@
     "deploy": "npx opennextjs-cloudflare build && npx opennextjs-cloudflare deploy"
   },
   "dependencies": {
-    "framer-motion": "^10.16.0",
     "next": "^16.2.6",
-    "nodemailer": "^6.9.7",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "^1.19.9",
     "@types/node": "^20.0.0",
-    "@types/nodemailer": "^6.4.14",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.16",
     "eslint": "^10.0.0",
     "eslint-config-next": "^16.2.6",

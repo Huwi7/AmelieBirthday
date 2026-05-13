@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { motion } from 'framer-motion'
 
 export default function PonySpiel() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -9,7 +8,6 @@ export default function PonySpiel() {
   const [gameOver, setGameOver] = useState(false)
   const [highScore, setHighScore] = useState(0)
 
-  // Spielzustand
   const gameStateRef = useRef({
     pony: { x: 100, y: 200, vy: 0, width: 60, height: 40 },
     obstacles: [] as Array<{x: number, y: number, width: number, height: number, passed: boolean}>,
@@ -27,7 +25,6 @@ export default function PonySpiel() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    // Pony zeichnen - Vereinfacht und korrekt proportioniert
     const drawPony = () => {
       const { pony } = gameStateRef.current
       const x = pony.x
@@ -37,13 +34,11 @@ export default function PonySpiel() {
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
 
-      // Körper - rechteckig, braun
       ctx.fillStyle = '#B8623D'
       ctx.fillRect(x + 15, y + 18, 35, 22)
       ctx.strokeStyle = '#1a1a1a'
       ctx.strokeRect(x + 15, y + 18, 35, 22)
 
-      // Kopf - rechts oben, rötlich-braun
       ctx.fillStyle = '#D2691E'
       ctx.beginPath()
       ctx.ellipse(x + 52, y + 12, 12, 14, 0, 0, Math.PI * 2)
@@ -51,7 +46,6 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Schnauze - beige, kleine Ellipse
       ctx.fillStyle = '#E8D5C4'
       ctx.beginPath()
       ctx.ellipse(x + 61, y + 16, 5.5, 4.5, 0, 0, Math.PI * 2)
@@ -59,9 +53,7 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Ohren
       ctx.fillStyle = '#8B5A3C'
-      // Linkes Ohr
       ctx.beginPath()
       ctx.moveTo(x + 46, y + 2)
       ctx.lineTo(x + 42, y - 6)
@@ -71,7 +63,6 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Rechtes Ohr
       ctx.fillStyle = '#8B5A3C'
       ctx.beginPath()
       ctx.moveTo(x + 58, y + 2)
@@ -82,7 +73,6 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Auge
       ctx.fillStyle = '#1a1a1a'
       ctx.beginPath()
       ctx.arc(x + 48, y + 10, 2, 0, Math.PI * 2)
@@ -93,7 +83,6 @@ export default function PonySpiel() {
       ctx.arc(x + 49, y + 9, 0.7, 0, Math.PI * 2)
       ctx.fill()
 
-      // Mähne - Gelb, lockig
       ctx.fillStyle = '#FFD700'
       ctx.beginPath()
       ctx.moveTo(x + 45, y + 5)
@@ -107,7 +96,6 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Mähne Oberteil
       ctx.fillStyle = '#FFD700'
       ctx.beginPath()
       ctx.moveTo(x + 50, y + 3)
@@ -118,44 +106,34 @@ export default function PonySpiel() {
       ctx.strokeStyle = '#1a1a1a'
       ctx.stroke()
 
-      // Vier Beine - direkt unter dem Körper
-      // Vorderes linkes Bein
       ctx.fillStyle = '#8B6914'
       ctx.fillRect(x + 20, y + 40, 5, 16)
       ctx.strokeStyle = '#1a1a1a'
       ctx.strokeRect(x + 20, y + 40, 5, 16)
-      // Huf
       ctx.fillStyle = '#1a1a1a'
       ctx.fillRect(x + 19, y + 56, 7, 3)
 
-      // Vorderes rechtes Bein
       ctx.fillStyle = '#8B6914'
       ctx.fillRect(x + 30, y + 40, 5, 16)
       ctx.strokeStyle = '#1a1a1a'
       ctx.strokeRect(x + 30, y + 40, 5, 16)
-      // Huf
       ctx.fillStyle = '#1a1a1a'
       ctx.fillRect(x + 29, y + 56, 7, 3)
 
-      // Hinteres linkes Bein
       ctx.fillStyle = '#8B6914'
       ctx.fillRect(x + 40, y + 40, 5, 16)
       ctx.strokeStyle = '#1a1a1a'
       ctx.strokeRect(x + 40, y + 40, 5, 16)
-      // Huf
       ctx.fillStyle = '#1a1a1a'
       ctx.fillRect(x + 39, y + 56, 7, 3)
 
-      // Hinteres rechtes Bein
       ctx.fillStyle = '#8B6914'
       ctx.fillRect(x + 45, y + 40, 5, 16)
       ctx.strokeStyle = '#1a1a1a'
       ctx.strokeRect(x + 45, y + 40, 5, 16)
-      // Huf
       ctx.fillStyle = '#1a1a1a'
       ctx.fillRect(x + 44, y + 56, 7, 3)
 
-      // Schweif - gelb, lockig, hinten links
       ctx.fillStyle = '#FFD700'
       ctx.beginPath()
       ctx.moveTo(x + 15, y + 25)
@@ -169,7 +147,6 @@ export default function PonySpiel() {
       ctx.stroke()
     }
 
-    // Hindernisse zeichnen
     const drawObstacles = () => {
       ctx.fillStyle = '#98FB98'
       gameStateRef.current.obstacles.forEach(obstacle => {
@@ -177,37 +154,30 @@ export default function PonySpiel() {
       })
     }
 
-    // Hintergrund zeichnen
     const drawBackground = () => {
-      // Himmel
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
       gradient.addColorStop(0, '#FFB6C1')
       gradient.addColorStop(1, '#DDA0DD')
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      // Boden
       ctx.fillStyle = '#98FB98'
       ctx.fillRect(0, gameStateRef.current.groundY, canvas.width, canvas.height - gameStateRef.current.groundY)
     }
 
-    // Spiel-Loop
     const gameLoop = () => {
       if (!gameStateRef.current.gameRunning) return
 
       const { pony, obstacles, groundY, gravity, obstacleSpeed } = gameStateRef.current
 
-      // Pony-Physik
       pony.vy += gravity
       pony.y += pony.vy
 
-      // Boden-Kollision
       if (pony.y + pony.height >= groundY) {
         pony.y = groundY - pony.height
         pony.vy = 0
       }
 
-      // Hindernisse bewegen
       obstacles.forEach(obstacle => {
         obstacle.x -= obstacleSpeed
         if (!obstacle.passed && obstacle.x + obstacle.width < pony.x) {
@@ -216,7 +186,6 @@ export default function PonySpiel() {
         }
       })
 
-      // Neue Hindernisse
       if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < canvas.width - 200) {
         const height = Math.random() * 30 + 20
         obstacles.push({
@@ -228,10 +197,8 @@ export default function PonySpiel() {
         })
       }
 
-      // Alte Hindernisse entfernen
       gameStateRef.current.obstacles = obstacles.filter(obstacle => obstacle.x > -obstacle.width)
 
-      // Kollisionserkennung
       const ponyRect = { x: pony.x, y: pony.y, width: pony.width, height: pony.height }
       for (const obstacle of obstacles) {
         const obstacleRect = { x: obstacle.x, y: obstacle.y, width: obstacle.width, height: obstacle.height }
@@ -248,7 +215,6 @@ export default function PonySpiel() {
         }
       }
 
-      // Zeichnen
       drawBackground()
       drawObstacles()
       drawPony()
@@ -256,7 +222,6 @@ export default function PonySpiel() {
       requestAnimationFrame(gameLoop)
     }
 
-    // Spiel starten
     const startGame = () => {
       gameStateRef.current = {
         pony: { x: 100, y: 200, vy: 0, width: 60, height: 40 },
@@ -272,7 +237,6 @@ export default function PonySpiel() {
       gameLoop()
     }
 
-    // Event Listener
     const handleJump = () => {
       if (!gameStateRef.current.gameRunning) {
         if (gameOver) {
@@ -294,7 +258,6 @@ export default function PonySpiel() {
       }
     })
 
-    // Initiales Zeichnen
     drawBackground()
     drawPony()
 
@@ -307,20 +270,15 @@ export default function PonySpiel() {
   return (
     <section className="py-16 px-4">
       <div className="max-w-4xl mx-auto text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-pacifico text-white mb-8 drop-shadow-lg"
+        <h2
+          className="text-4xl md:text-5xl font-pacifico text-white mb-8 drop-shadow-lg animate-fade-in-up"
         >
           Spiel mit Wolke dem Pony! 🐴
-        </motion.h2>
+        </h2>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg mb-6"
+        <div
+          className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg mb-6 animate-fade-in-scale delay-200"
+          style={{ opacity: 0 }}
         >
           <div className="flex justify-between items-center mb-4">
             <div className="text-white font-nunito">
@@ -341,13 +299,11 @@ export default function PonySpiel() {
           <div className="mt-4 text-white font-nunito text-sm">
             Klick oder Leertaste zum Springen!
           </div>
-        </motion.div>
+        </div>
 
         {gameOver && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg"
+          <div
+            className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 shadow-lg animate-fade-in-scale"
           >
             <h3 className="text-2xl font-pacifico text-white mb-4">Game Over!</h3>
             <p className="text-white font-nunito mb-4">
@@ -362,7 +318,7 @@ export default function PonySpiel() {
             >
               Nochmal spielen 🎮
             </button>
-          </motion.div>
+          </div>
         )}
       </div>
     </section>

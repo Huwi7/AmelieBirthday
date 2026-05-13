@@ -14,6 +14,7 @@ module.exports = {
         'gold': '#FFD700',
       },
       fontFamily: {
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
         'pacifico': ['Pacifico', 'cursive'],
         'nunito': ['Nunito', 'sans-serif'],
       },

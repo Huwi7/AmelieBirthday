@@ -1,17 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 
 export default function Anmeldung() {
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [attending, setAttending] = useState<boolean | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim() || attending === null) return
+    if (!name.trim() || !email.trim() || attending === null) return
 
     setLoading(true)
     try {
@@ -20,7 +20,7 @@ export default function Anmeldung() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: name.trim(), attending }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), attending }),
       })
 
       if (response.ok) {
@@ -39,26 +39,26 @@ export default function Anmeldung() {
     return (
       <section className="py-16 px-4">
         <div className="max-w-md mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg"
-          >
+          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg animate-fade-in-scale">
             <div className="text-6xl mb-4">🎉</div>
             <h3 className="text-2xl font-pacifico text-white mb-4">
               Super! Wir freuen uns auf {name}! 🦄
             </h3>
+            <p className="text-white/80 font-nunito mb-4">
+              Wir melden uns per E-Mail bei dir!
+            </p>
             <button
               onClick={() => {
                 setSubmitted(false)
                 setName('')
+                setEmail('')
                 setAttending(null)
               }}
               className="bg-gold text-white px-6 py-2 rounded-full font-nunito hover:bg-yellow-400 transition-colors"
             >
               Neue Anmeldung
             </button>
-          </motion.div>
+          </div>
         </div>
       </section>
     )
@@ -67,21 +67,14 @@ export default function Anmeldung() {
   return (
     <section className="py-16 px-4">
       <div className="max-w-md mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-pacifico text-white text-center mb-12 drop-shadow-lg"
-        >
+        <h2 className="text-4xl md:text-5xl font-pacifico text-white text-center mb-12 drop-shadow-lg animate-fade-in-up">
           Bisch dabei? Meld dich an! 🎈
-        </motion.h2>
+        </h2>
 
-        <motion.form
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+        <form
           onSubmit={handleSubmit}
-          className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg"
+          className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg animate-fade-in-up delay-200"
+          style={{ opacity: 0 }}
         >
           <div className="mb-6">
             <label className="block text-white font-nunito mb-2">
@@ -93,6 +86,20 @@ export default function Anmeldung() {
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-2 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder-white/50 focus:border-gold focus:outline-none"
               placeholder="z.B. Anna"
+              required
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-white font-nunito mb-2">
+              E-Mail (Eltern) *
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder-white/50 focus:border-gold focus:outline-none"
+              placeholder="z.B. eltern@beispiel.ch"
               required
             />
           </div>
@@ -129,12 +136,12 @@ export default function Anmeldung() {
 
           <button
             type="submit"
-            disabled={!name.trim() || attending === null || loading}
+            disabled={!name.trim() || !email.trim() || attending === null || loading}
             className="w-full bg-gold text-white py-3 px-6 rounded-full font-nunito text-lg hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Wird abgesendet...' : 'Absenden 🎠'}
           </button>
-        </motion.form>
+        </form>
       </div>
     </section>
   )

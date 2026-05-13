@@ -3,3 +3,11 @@ compatibility_date = "2026-05-13"
 compatibility_flags = ["nodejs_compat"]
 main = ".open-next/worker.js"
 workers_dev = true
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[[kv_namespaces]]
+binding = "RSVPS"
+id = "450a8c8dec9c48358ccb4d42c7ef27a3"
