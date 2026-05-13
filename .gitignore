@@ -12,4 +12,5 @@ out/
 amelie_page_v1/.env.local
 
 .open-next/
+.wrangler/
 .dev.vars
