@@ -10,12 +10,16 @@ export default function PonySpiel() {
 
   const gameStateRef = useRef({
     pony: { x: 100, y: 200, vy: 0, width: 60, height: 40 },
-    obstacles: [] as Array<{x: number, y: number, width: number, height: number, passed: boolean}>,
+    obstacles: [] as Array<{x: number, y: number, width: number, height: number, passed: boolean, type: number}>,
+    clouds: [] as Array<{x: number, y: number, width: number, speed: number, opacity: number}>,
+    stars: [] as Array<{x: number, y: number, size: number, twinkle: number, speed: number, baseY: number}>,
     groundY: 300,
     gravity: 0.6,
     jumpStrength: -12,
     obstacleSpeed: 3,
     gameRunning: false,
+    jumpsLeft: 2,
+    frame: 0,
   })
 
   useEffect(() => {
@@ -147,22 +151,147 @@ export default function PonySpiel() {
       ctx.stroke()
     }
 
-    const drawObstacles = () => {
-      ctx.fillStyle = '#98FB98'
-      gameStateRef.current.obstacles.forEach(obstacle => {
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
-      })
+    const drawObstacle = (obstacle: {x: number, y: number, width: number, height: number, type: number}) => {
+      const x = obstacle.x
+      const y = obstacle.y
+      const w = obstacle.width
+      const h = obstacle.height
+
+      if (obstacle.type === 0) {
+        ctx.fillStyle = '#8B4513'
+        ctx.fillRect(x + w / 2 - 4, y + h * 0.4, 8, h * 0.6)
+        ctx.fillStyle = '#FF1493'
+        ctx.beginPath()
+        ctx.arc(x + w / 2, y + h * 0.3, w / 2, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = '#FF69B4'
+        ctx.beginPath()
+        ctx.arc(x + w / 2 - 6, y + h * 0.2, w / 3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.beginPath()
+        ctx.arc(x + w / 2 + 6, y + h * 0.25, w / 3, 0, Math.PI * 2)
+        ctx.fill()
+      } else if (obstacle.type === 1) {
+        ctx.fillStyle = '#9370DB'
+        ctx.beginPath()
+        ctx.moveTo(x, y + h)
+        ctx.lineTo(x + w * 0.3, y)
+        ctx.lineTo(x + w * 0.5, y + h * 0.3)
+        ctx.lineTo(x + w * 0.7, y - 5)
+        ctx.lineTo(x + w, y + h)
+        ctx.closePath()
+        ctx.fill()
+        ctx.strokeStyle = '#7B68EE'
+        ctx.lineWidth = 2
+        ctx.stroke()
+        ctx.fillStyle = '#E6E6FA'
+        ctx.beginPath()
+        ctx.arc(x + w * 0.3, y - 3, 3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.beginPath()
+        ctx.arc(x + w * 0.7, y - 8, 3, 0, Math.PI * 2)
+        ctx.fill()
+      } else {
+        ctx.fillStyle = '#DA70D6'
+        ctx.beginPath()
+        ctx.ellipse(x + w / 2, y + h * 0.6, w / 2, h * 0.4, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = '#BA55D3'
+        ctx.beginPath()
+        ctx.ellipse(x + w / 2, y + h * 0.3, w / 3, h * 0.3, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = '#FFD700'
+        ctx.font = `${Math.min(w, 16)}px sans-serif`
+        ctx.fillText('✨', x + w / 2 - 6, y + 2)
+      }
     }
 
     const drawBackground = () => {
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-      gradient.addColorStop(0, '#FFB6C1')
-      gradient.addColorStop(1, '#DDA0DD')
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      const { groundY, frame } = gameStateRef.current
 
-      ctx.fillStyle = '#98FB98'
-      ctx.fillRect(0, gameStateRef.current.groundY, canvas.width, canvas.height - gameStateRef.current.groundY)
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, groundY)
+      skyGrad.addColorStop(0, '#1a0533')
+      skyGrad.addColorStop(0.3, '#2d1b69')
+      skyGrad.addColorStop(0.6, '#6b3fa0')
+      skyGrad.addColorStop(1, '#c471ed')
+      ctx.fillStyle = skyGrad
+      ctx.fillRect(0, 0, canvas.width, groundY)
+
+      gameStateRef.current.stars.forEach(star => {
+        const pulse = Math.sin(frame * 0.03 + star.twinkle)
+        const brightness = 0.3 + 0.7 * Math.max(0, pulse)
+        const glow = star.size + pulse * 0.8
+        ctx.fillStyle = `rgba(255, 255, 220, ${brightness * 0.3})`
+        ctx.beginPath()
+        ctx.arc(star.x, star.y, glow + 3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = `rgba(255, 255, 200, ${brightness})`
+        ctx.beginPath()
+        ctx.arc(star.x, star.y, Math.max(0.5, glow), 0, Math.PI * 2)
+        ctx.fill()
+      })
+
+      const moonX = 700
+      const moonY = 60
+      const moonGlow = ctx.createRadialGradient(moonX, moonY, 15, moonX, moonY, 60)
+      moonGlow.addColorStop(0, 'rgba(255, 215, 0, 0.4)')
+      moonGlow.addColorStop(0.5, 'rgba(255, 215, 0, 0.1)')
+      moonGlow.addColorStop(1, 'rgba(255, 215, 0, 0)')
+      ctx.fillStyle = moonGlow
+      ctx.fillRect(moonX - 60, moonY - 60, 120, 120)
+      ctx.fillStyle = 'rgba(255, 235, 150, 0.7)'
+      ctx.beginPath()
+      ctx.arc(moonX, moonY, 25, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = 'rgba(255, 245, 200, 0.9)'
+      ctx.beginPath()
+      ctx.arc(moonX, moonY, 18, 0, Math.PI * 2)
+      ctx.fill()
+
+      gameStateRef.current.clouds.forEach(cloud => {
+        ctx.globalAlpha = cloud.opacity
+        ctx.fillStyle = 'rgba(200, 180, 255, 0.5)'
+        ctx.beginPath()
+        ctx.ellipse(cloud.x, cloud.y, cloud.width, 14, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = 'rgba(220, 200, 255, 0.4)'
+        ctx.beginPath()
+        ctx.ellipse(cloud.x - cloud.width * 0.35, cloud.y + 4, cloud.width * 0.6, 11, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = 'rgba(210, 190, 255, 0.35)'
+        ctx.beginPath()
+        ctx.ellipse(cloud.x + cloud.width * 0.35, cloud.y + 2, cloud.width * 0.55, 10, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.globalAlpha = 1
+      })
+
+      const groundGrad = ctx.createLinearGradient(0, groundY, 0, canvas.height)
+      groundGrad.addColorStop(0, '#7B68EE')
+      groundGrad.addColorStop(0.5, '#9370DB')
+      groundGrad.addColorStop(1, '#6A5ACD')
+      ctx.fillStyle = groundGrad
+      ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY)
+
+      for (let i = 0; i < canvas.width; i += 30) {
+        const offset = (i * 7 + frame) % 60
+        const flowerX = i + (offset % 20) - 10
+        const flowerY = groundY + 15 + (offset % 30)
+        ctx.fillStyle = ['#FF69B4', '#FFD700', '#FF6347', '#DA70D6'][i % 4]
+        ctx.beginPath()
+        ctx.arc(flowerX, flowerY, 3, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = '#98FB98'
+        ctx.fillRect(flowerX - 0.5, flowerY + 3, 1, 5)
+      }
+
+      ctx.strokeStyle = 'rgba(255, 215, 0, 0.15)'
+      ctx.lineWidth = 1
+      ctx.setLineDash([4, 8])
+      ctx.beginPath()
+      ctx.moveTo(0, groundY)
+      ctx.lineTo(canvas.width, groundY)
+      ctx.stroke()
+      ctx.setLineDash([])
     }
 
     const gameLoop = () => {
@@ -176,6 +305,7 @@ export default function PonySpiel() {
       if (pony.y + pony.height >= groundY) {
         pony.y = groundY - pony.height
         pony.vy = 0
+        gameStateRef.current.jumpsLeft = 2
       }
 
       obstacles.forEach(obstacle => {
@@ -186,14 +316,38 @@ export default function PonySpiel() {
         }
       })
 
+      gameStateRef.current.frame++
+
+      gameStateRef.current.clouds.forEach(cloud => {
+        cloud.x -= cloud.speed
+        if (cloud.x < -cloud.width * 2) {
+          cloud.x = canvas.width + cloud.width
+          cloud.y = Math.random() * groundY * 0.4 + 30
+          cloud.opacity = Math.random() * 0.3 + 0.2
+        }
+      })
+
+      gameStateRef.current.stars.forEach(star => {
+        star.x -= star.speed
+        star.y = star.baseY + Math.sin(gameStateRef.current.frame * 0.01 + star.twinkle) * 2
+        if (star.x < -5) {
+          star.x = canvas.width + 5
+          star.baseY = Math.random() * 180
+          star.y = star.baseY
+        }
+      })
+
       if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < canvas.width - 200) {
-        const height = Math.random() * 30 + 20
+        const type = Math.floor(Math.random() * 3)
+        const height = Math.random() * 30 + 25
+        const width = type === 2 ? 30 : (type === 1 ? 25 : 20)
         obstacles.push({
           x: canvas.width,
           y: groundY - height,
-          width: 20,
-          height: height,
+          width,
+          height,
           passed: false,
+          type,
         })
       }
 
@@ -216,21 +370,48 @@ export default function PonySpiel() {
       }
 
       drawBackground()
-      drawObstacles()
+      gameStateRef.current.obstacles.forEach(drawObstacle)
       drawPony()
 
       requestAnimationFrame(gameLoop)
     }
 
+    const initCloudsAndStars = () => {
+      const clouds = Array.from({ length: 6 }, (_, i) => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * 100 + 20 + (i % 3) * 30,
+        width: Math.random() * 35 + 20,
+        speed: Math.random() * 0.4 + 0.1 + (i % 3) * 0.15,
+        opacity: Math.random() * 0.3 + 0.15,
+      }))
+      const stars = Array.from({ length: 40 }, () => {
+        const baseY = Math.random() * 180
+        return {
+          x: Math.random() * canvas.width,
+          y: baseY,
+          baseY,
+          size: Math.random() * 2 + 0.5,
+          twinkle: Math.random() * Math.PI * 2,
+          speed: Math.random() * 0.15 + 0.05,
+        }
+      })
+      return { clouds, stars }
+    }
+
     const startGame = () => {
+      const { clouds, stars } = initCloudsAndStars()
       gameStateRef.current = {
         pony: { x: 100, y: 200, vy: 0, width: 60, height: 40 },
         obstacles: [],
+        clouds,
+        stars,
         groundY: 300,
         gravity: 0.6,
         jumpStrength: -12,
         obstacleSpeed: 3,
         gameRunning: true,
+        jumpsLeft: 2,
+        frame: 0,
       }
       setScore(0)
       setGameOver(false)
@@ -245,25 +426,31 @@ export default function PonySpiel() {
           gameStateRef.current.gameRunning = true
           gameLoop()
         }
-      } else {
+      } else if (gameStateRef.current.jumpsLeft > 0) {
         gameStateRef.current.pony.vy = gameStateRef.current.jumpStrength
+        gameStateRef.current.jumpsLeft--
       }
     }
 
-    canvas.addEventListener('click', handleJump)
-    document.addEventListener('keydown', (e) => {
+    const handleKeydown = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         e.preventDefault()
         handleJump()
       }
-    })
+    }
 
+    canvas.addEventListener('click', handleJump)
+    document.addEventListener('keydown', handleKeydown)
+
+    const { clouds, stars } = initCloudsAndStars()
+    gameStateRef.current.clouds = clouds
+    gameStateRef.current.stars = stars
     drawBackground()
     drawPony()
 
     return () => {
       canvas.removeEventListener('click', handleJump)
-      document.removeEventListener('keydown', handleJump)
+      document.removeEventListener('keydown', handleKeydown)
     }
   }, [score, gameOver])
 

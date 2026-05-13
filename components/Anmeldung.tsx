@@ -1,18 +1,27 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function Anmeldung() {
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
   const [attending, setAttending] = useState<boolean | null>(null)
   const [fahrdienst, setFahrdienst] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [hasDriver, setHasDriver] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/rsvp')
+      .then(res => res.json())
+      .then(data => {
+        setHasDriver(data.some((r: any) => r.attending && r.fahrdienst))
+      })
+      .catch(() => {})
+  }, [submitted])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim() || !email.trim() || attending === null) return
+    if (!name.trim() || attending === null) return
 
     setLoading(true)
     try {
@@ -21,7 +30,7 @@ export default function Anmeldung() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), attending, fahrdienst }),
+        body: JSON.stringify({ name: name.trim(), attending, fahrdienst }),
       })
 
       if (response.ok) {
@@ -41,18 +50,25 @@ export default function Anmeldung() {
       <section className="py-16 px-4">
         <div className="max-w-md mx-auto text-center">
           <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-8 shadow-lg animate-fade-in-scale">
-            <div className="text-6xl mb-4">🎉</div>
-            <h3 className="text-2xl font-pacifico text-white mb-4">
-              Super! Wir freuen uns auf {name}! 🦄
-            </h3>
-            <p className="text-white/80 font-nunito mb-4">
-              Wir melden uns per E-Mail bei dir!
-            </p>
+            {attending ? (
+              <>
+                <div className="text-6xl mb-4">🎉</div>
+                <h3 className="text-2xl font-pacifico text-white mb-4">
+                  Super! Wir freuen uns auf {name}! 🦄
+                </h3>
+              </>
+            ) : (
+              <>
+                <div className="text-6xl mb-4">😢</div>
+                <h3 className="text-2xl font-pacifico text-white mb-4">
+                  Oh schade, dass {name} nicht teilnehmen kann 😢
+                </h3>
+              </>
+            )}
             <button
               onClick={() => {
                 setSubmitted(false)
                 setName('')
-                setEmail('')
                 setAttending(null)
                 setFahrdienst(false)
               }}
@@ -94,20 +110,6 @@ export default function Anmeldung() {
 
           <div className="mb-6">
             <label className="block text-white font-nunito mb-2">
-              E-Mail (Eltern) *
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder-white/50 focus:border-gold focus:outline-none"
-              placeholder="z.B. eltern@beispiel.ch"
-              required
-            />
-          </div>
-
-          <div className="mb-6">
-            <label className="block text-white font-nunito mb-2">
               Kommt es?
             </label>
             <div className="flex gap-4">
@@ -136,7 +138,7 @@ export default function Anmeldung() {
             </div>
           </div>
 
-          {attending === true && (
+          {attending === true && !hasDriver && (
             <div className="mb-6">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -146,7 +148,7 @@ export default function Anmeldung() {
                   className="w-5 h-5 rounded accent-gold"
                 />
                 <span className="text-white font-nunito">
-                  🚗 Wir können als Fahrer/in helfen (wir haben zu wenig Platz im Auto)
+                  🚗 Wir suchen noch einen zusätzlichen Fahrer/in — kannst du helfen?
                 </span>
               </label>
             </div>
@@ -154,7 +156,7 @@ export default function Anmeldung() {
 
           <button
             type="submit"
-            disabled={!name.trim() || !email.trim() || attending === null || loading}
+            disabled={!name.trim() || attending === null || loading}
             className="w-full bg-gold text-white py-3 px-6 rounded-full font-nunito text-lg hover:bg-yellow-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Wird abgesendet...' : 'Absenden 🎠'}
