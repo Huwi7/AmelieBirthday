@@ -36,13 +36,15 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rosa to-lila p-8">
       <div className="max-w-4xl mx-auto">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-4xl md:text-6xl font-pacifico text-white text-center mb-8 drop-shadow-lg"
+          className="mb-8"
         >
-          Admin — Anmeldungen 🎉
-        </motion.h1>
+          <h1 className="text-4xl md:text-6xl font-pacifico text-white text-center drop-shadow-lg">
+            Admin — Anmeldungen 🎉
+          </h1>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 50 }}
