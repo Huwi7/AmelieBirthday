@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.vscode/
+dist/
+build/
+.DS_Store
+.env
+.env.local
+.next/
+out/
+.env.local
+amelie_page_v1/.env.local
