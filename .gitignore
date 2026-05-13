@@ -13,5 +13,3 @@ amelie_page_v1/.env.local
 
 .open-next/
 .dev.vars
-wrangler.toml
-open-next.config.js

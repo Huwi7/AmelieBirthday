@@ -1,0 +1,5 @@
+name = "amelie-birthday"
+compatibility_date = "2026-05-13"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+workers_dev = true
